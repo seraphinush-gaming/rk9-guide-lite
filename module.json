@@ -1,0 +1,18 @@
+{
+  "author": "seraphinush",
+  "description": "tera-toolbox module to help inside TERA dungeon `RK-9 Kennel (hard)`",
+  "disableAutoUpdate": false,
+  "donationUrl": "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=B7QQJZV9L5P2J&source=url",
+  "name": "rk9hm-guide-lite",
+  "options": {
+    "reloadable": true,
+    "settingsVersion": 1,
+    "settingsFile": "config.json",
+    "settingsMigrator": "settings.js"
+  },
+  "servers": [
+    "https://raw.githubusercontent.com/seraphinush-gaming/rk9hm-guide-lite/master/"
+  ],
+  "supportUrl": "https://github.com/seraphinush-gaming/rk9hm-guide-lite/blob/master/README.md",
+  "version": "1.00.00"
+}
