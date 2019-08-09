@@ -10,6 +10,7 @@ class Rk9HmGuideLite {
 
     this.mod = mod;
     this.cmd = mod.command;
+    this.game = mod.game;
     this.settings = mod.settings;
     this.hooks = [];
 
@@ -41,27 +42,46 @@ class Rk9HmGuideLite {
       },
       'party': () => {
         // 1
-        if (this.chatChannel !== 0 || this.chatChannel !== 1) {
+        if (this.chatChannel !== 1) {
           this.chatChannel = 1;
         } else {
           this.chatChannel = 0;
         }
-        this.send(`Sending mechanics order to party chat ${this.chatChannel === 0 ? 'en' : 'dis'}abled`);
+        this.send(`Sending mechanics order to party chat ${this.chatChannel === 0 ? 'en' : 'dis'}abled.`);
       },
       'notice': () => {
         // 21
-        if (this.chatChannel !== 0 || this.chatChannel !== 21) {
+        if (this.chatChannel !== 21) {
           this.chatChannel = 21;
         } else {
           this.chatChannel = 0;
         }
-        this.send(`Sending mechanics order to notice chat ${this.chatChannel === 0 ? 'en' : 'dis'}abled`);
+        this.send(`Sending mechanics order to notice chat ${this.chatChannel === 0 ? 'en' : 'dis'}abled.`);
+        if (this.chatChannel === 21) {
+          this.send(`Please make sure you are the party leader.`);
+        }
       },
-      '$default': () => this.send(`Invalid argument. usage : rk []`)
+      '$default': () => this.send(`Invalid argument. usage : rk [party|notice]`)
     });
 
     // game state
-    this.mod.hook('S_LOAD_TOPO', 3, { order: -1000 }, (e) => {
+    this.game.me.on('change_zone', (zone) => {
+      this.myZone = zone;
+      if (this.enable && !this.loaded && zone === 9935) {
+        this.load();
+        this.loaded = true;
+      }
+      else if (this.enable && this.loaded && zone !== 9935) {
+        this.unload();
+        this.loaded = false;
+        this.messageA = this.mechStrings[3];
+        this.messageB = this.mechStrings[3];
+        this.prevMechFirst = true;
+        this.send(`Leaving RK-9 Kennel (hard). unloaded guide module.`);
+      }
+    });
+
+    /* this.mod.hook('S_LOAD_TOPO', 3, { order: -1000 }, (e) => {
       this.myZone = e.zone;
       if (this.enable && !this.loaded && e.zone === 9935) {
         this.load();
@@ -75,8 +95,32 @@ class Rk9HmGuideLite {
         this.prevMechFirst = true;
         this.send(`Leaving RK-9 Kennel (hard). unloaded guide module.`);
       }
-    });
+    }); */
 
+  }
+
+  destructor() {
+    this.unload();
+
+    this.cmd.remove('rk');
+
+    this.thirdBoss = undefined;
+    this.prevMechFirst = undefined;
+    this.myZone = undefined;
+    this.messageB = undefined;
+    this.messageA = undefined;
+    this.mechStrings = undefined;
+    this.loaded = undefined;
+    this.curZone = undefined;
+    this.chatChannel = undefined;
+
+    this.enable = undefined;
+
+    this.hooks = undefined;
+    this.settings = undefined;
+    this.game = undefined;
+    this.cmd = undefined;
+    this.mod = undefined;
   }
 
   // helper
@@ -165,7 +209,7 @@ class Rk9HmGuideLite {
     }
   }
 
-  send(msg) { this.cmd.message(': ' + msg); }
+  send() { this.cmd.message(': ' + [...arguments].join('\n\t - ')); }
 
   // reload
   saveState() {
@@ -180,29 +224,10 @@ class Rk9HmGuideLite {
     }
   }
 
-  destructor() {
-    this.unload();
-
-    this.cmd.remove('rk');
-
-    this.thirdBoss = undefined;
-    this.prevMechFirst = undefined;
-    this.myZone = undefined;
-    this.messageB = undefined;
-    this.messageA = undefined;
-    this.mechStrings = undefined;
-    this.loaded = undefined;
-    this.curZone = undefined;
-    this.chatChannel = undefined;
-
-    this.enable = undefined;
-    this.hooks = undefined;
-    this.cmd = undefined;
-    this.mod = undefined;
-  }
-
 }
 
-module.exports = function Rk9HmGuideLiteLoader(mod) {
+module.exports = Rk9HmGuideLite;
+
+/* module.exports = function Rk9HmGuideLiteLoader(mod) {
   return new Rk9HmGuideLite(mod);
-}
+} */

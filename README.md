@@ -24,6 +24,8 @@ Support seraph via paypal donations, thanks in advance !
 ## Changelog
 <details>
 
+    1.01
+    - Incorporated `tera-game-state`
     1.00
     - Initial online commit
 
