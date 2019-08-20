@@ -205,7 +205,3 @@ class Rk9HmGuideLite {
 }
 
 module.exports = Rk9HmGuideLite;
-
-/* module.exports = function Rk9HmGuideLiteLoader(mod) {
-  return new Rk9HmGuideLite(mod);
-} */
