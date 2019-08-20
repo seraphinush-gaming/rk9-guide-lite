@@ -1,8 +1,4 @@
-/* const START = 1202128153;
-const SECOND_IN = 1202128160;
-const SECOND_OUT = 1202128161;
-const SECOND_WAVE = 1202128162;
- */
+'use strict';
 
 class Rk9HmGuideLite {
 
@@ -40,8 +36,7 @@ class Rk9HmGuideLite {
         }
         this.send(`${this.enable ? 'En' : 'Dis'}abled`);
       },
-      'party': () => {
-        // 1
+      'party': () => { // 1
         if (this.chatChannel !== 1) {
           this.chatChannel = 1;
         } else {
@@ -49,8 +44,7 @@ class Rk9HmGuideLite {
         }
         this.send(`Sending mechanics order to party chat ${this.chatChannel === 0 ? 'en' : 'dis'}abled.`);
       },
-      'notice': () => {
-        // 21
+      'notice': () => { // 21
         if (this.chatChannel !== 21) {
           this.chatChannel = 21;
         } else {
@@ -80,22 +74,6 @@ class Rk9HmGuideLite {
         this.send(`Leaving RK-9 Kennel (hard). unloaded guide module.`);
       }
     });
-
-    /* this.mod.hook('S_LOAD_TOPO', 3, { order: -1000 }, (e) => {
-      this.myZone = e.zone;
-      if (this.enable && !this.loaded && e.zone === 9935) {
-        this.load();
-        this.loaded = true;
-      }
-      else if (this.enable && this.loaded && e.zone !== 9935) {
-        this.unload();
-        this.loaded = false;
-        this.messageA = this.mechStrings[3];
-        this.messageB = this.mechStrings[3];
-        this.prevMechFirst = true;
-        this.send(`Leaving RK-9 Kennel (hard). unloaded guide module.`);
-      }
-    }); */
 
   }
 
