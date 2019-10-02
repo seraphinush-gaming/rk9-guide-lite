@@ -28,11 +28,9 @@ class Rk9HmGuideLite {
         this.enable = !this.enable;
         if (this.enable && this.myZone === 9935) {
           this.load();
-          this.loaded = true;
         }
         else {
           this.unload();
-          this.loaded = false;
         }
         this.send(`${this.enable ? 'En' : 'Dis'}abled`);
       },
@@ -175,6 +173,7 @@ class Rk9HmGuideLite {
       }
     });
 
+    this.loaded = true;
     this.send(`Entering RK-9 Kennel (hard). loaded guide module.`);
   }
 
@@ -185,6 +184,8 @@ class Rk9HmGuideLite {
       }
       this.hooks = [];
     }
+    
+    this.loaded = false;
   }
 
   send() { this.cmd.message(': ' + [...arguments].join('\n\t - ')); }
