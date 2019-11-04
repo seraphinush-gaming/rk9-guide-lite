@@ -1,21 +1,21 @@
 'use strict';
 
-class Rk9HmGuideLite {
+class rk9hm_guide_lite {
 
   constructor(mod) {
 
-    this.mod = mod;
-    this.cmd = mod.command;
-    this.game = mod.game;
-    this.settings = mod.settings;
+    this.m = mod;
+    this.c = mod.command;
+    this.g = mod.game;
+    this.s = mod.settings;
     this.hooks = [];
 
-    this.enable = this.settings.enable;
+    this.enable = this.s.enable;
 
     this.chatChannel = 0;
     this.curZone = 0;
     this.loaded = false;
-    this.mechStrings = this.mod.region === 'kr' ? ['근', '원', '터', 'ㅇ'] : ['out', 'in', 'wave', 'o'];
+    this.mechStrings = this.m.region === 'kr' ? ['근', '원', '터', 'ㅇ'] : ['out', 'in', 'wave', 'o'];
     this.messageA = this.mechStrings[3];
     this.messageB = this.mechStrings[3];
     this.myZone = 0;
@@ -23,41 +23,27 @@ class Rk9HmGuideLite {
     this.thirdBoss = false;
 
     // command
-    this.cmd.add('rk', {
+    this.c.add('rk', {
       '$none': () => {
         this.enable = !this.enable;
-        if (this.enable && this.myZone === 9935) {
-          this.load();
-        }
-        else {
-          this.unload();
-        }
+        this.enable && this.myZone === 9935 ? this.load() : this.unload();
         this.send(`${this.enable ? 'En' : 'Dis'}abled`);
       },
       'party': () => { // 1
-        if (this.chatChannel !== 1) {
-          this.chatChannel = 1;
-        } else {
-          this.chatChannel = 0;
-        }
+        this.chatChannel !== 1 ? this.chatChannel = 1 : this.chatChannel = 0;
         this.send(`Sending mechanics order to party chat ${this.chatChannel === 0 ? 'en' : 'dis'}abled.`);
       },
       'notice': () => { // 21
-        if (this.chatChannel !== 21) {
-          this.chatChannel = 21;
-        } else {
-          this.chatChannel = 0;
-        }
+        this.chatChannel !== 21 ? this.chatChannel = 21 : this.chatChannel = 0;
         this.send(`Sending mechanics order to notice chat ${this.chatChannel === 0 ? 'en' : 'dis'}abled.`);
-        if (this.chatChannel === 21) {
+        if (this.chatChannel === 21)
           this.send(`Please make sure you are the party leader.`);
-        }
       },
       '$default': () => this.send(`Invalid argument. usage : rk [party|notice]`)
     });
 
     // game state
-    this.game.me.on('change_zone', (zone) => {
+    this.g.me.on('change_zone', (zone) => {
       this.myZone = zone;
       if (this.enable && !this.loaded && zone === 9935) {
         this.load();
@@ -77,32 +63,13 @@ class Rk9HmGuideLite {
 
   destructor() {
     this.unload();
-
-    this.cmd.remove('rk');
-
-    this.thirdBoss = undefined;
-    this.prevMechFirst = undefined;
-    this.myZone = undefined;
-    this.messageB = undefined;
-    this.messageA = undefined;
-    this.mechStrings = undefined;
-    this.loaded = undefined;
-    this.curZone = undefined;
-    this.chatChannel = undefined;
-
-    this.enable = undefined;
-
-    this.hooks = undefined;
-    this.settings = undefined;
-    this.game = undefined;
-    this.cmd = undefined;
-    this.mod = undefined;
+    this.c.remove('rk');
   }
 
   // helper
-  toChat(msg) {
+  to_chat(msg) {
     if (this.chatChannel) {
-      this.mod.send('C_CHAT', 1, {
+      this.m.send('C_CHAT', 1, {
         channel: this.chatChannel,
         message: msg
       });
@@ -112,18 +79,18 @@ class Rk9HmGuideLite {
     }
   }
 
-  mechOrder(delay) {
-    this.mod.setTimeout(() => {
+  mech_order(delay) {
+    this.m.setTimeout(() => {
       if (this.prevMechFirst)
-        this.toChat(`${this.messageA} ${this.messageB}`);
+        this.to_chat(`${this.messageA} ${this.messageB}`);
       else
-        this.toChat(`${this.messageB} ${this.messageA}`);
+        this.to_chat(`${this.messageB} ${this.messageA}`);
     }, delay);
   }
 
   // code
   hook() {
-    this.hooks.push(this.mod.hook(...arguments));
+    this.hooks.push(this.m.hook(...arguments));
   }
 
   load() {
@@ -137,23 +104,23 @@ class Rk9HmGuideLite {
         switch (id) {
           case 9935302:
             this.messageA = this.mechStrings[0];
-            this.mechOrder(2000);
+            this.mech_order(2000);
             break;
           case 9935303:
             this.messageA = this.mechStrings[1];
-            this.mechOrder(2000);
+            this.mech_order(2000);
             break;
           case 9935304:
             this.messageA = this.mechStrings[2];
-            this.mechOrder(2000);
+            this.mech_order(2000);
             break;
           case 9935311:
             this.prevMechFirst = true;
-            this.mechOrder(2000);
+            this.mech_order(2000);
             break;
           case 9935312:
             this.prevMechFirst = false;
-            this.mechOrder(2000);
+            this.mech_order(2000);
             break;
         }
       }
@@ -164,10 +131,10 @@ class Rk9HmGuideLite {
         let index = parseInt(e.message.replace('@monsterBehavior:', '')) - 935301;
         if (0 <= index && index < 3) {
           this.messageB = this.mechStrings[index];
-          this.mod.setTimeout(() => {
+          this.m.setTimeout(() => {
             this.messageA = this.messageB;
             this.messageB = this.mechStrings[3];
-            this.mechOrder(6000);
+            this.mech_order(6000);
           }, 8000);
         }
       }
@@ -180,7 +147,7 @@ class Rk9HmGuideLite {
   unload() {
     if (this.hooks.length) {
       for (let h of this.hooks) {
-        this.mod.unhook(h);
+        this.m.unhook(h);
       }
       this.hooks = [];
     }
@@ -188,7 +155,7 @@ class Rk9HmGuideLite {
     this.loaded = false;
   }
 
-  send() { this.cmd.message(': ' + [...arguments].join('\n\t - ')); }
+  send() { this.c.message(': ' + [...arguments].join('\n\t - ')); }
 
   // reload
   saveState() {
@@ -205,4 +172,4 @@ class Rk9HmGuideLite {
 
 }
 
-module.exports = Rk9HmGuideLite;
+module.exports = rk9hm_guide_lite;
