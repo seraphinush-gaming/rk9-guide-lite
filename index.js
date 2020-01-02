@@ -12,8 +12,7 @@ class rk9hm_guide_lite {
     this.s = mod.settings;
     this.hooks = [];
 
-    this.enable = this.s.enable;
-
+    // initialize
     this.chat_ch = 0;
     this.loaded = false;
     this.mech_str = this.m.region === 'kr' ? ['근', '원', '터', 'ㅇ'] : ['out', 'in', 'wave', 'o'];
@@ -25,9 +24,9 @@ class rk9hm_guide_lite {
     // command
     this.c.add('rk', {
       '$none': () => {
-        this.enable = !this.enable;
-        this.enable && this.cur_zone === ZONE_RKHM ? this.load() : this.unload();
-        this.send(`${this.enable ? 'En' : 'Dis'}abled`);
+        this.s.enable = !this.s.enable;
+        this.s.enable && this.cur_zone === ZONE_RKHM ? this.load() : this.unload();
+        this.send(`${this.s.enable ? 'En' : 'Dis'}abled`);
       },
       'party': () => { // 1
         this.chat_ch !== 1 ? this.chat_ch = 1 : this.chat_ch = 0;
@@ -45,11 +44,11 @@ class rk9hm_guide_lite {
     // game state
     this.g.me.on('change_zone', (zone) => {
       this.cur_zone = zone;
-      if (this.enable && !this.loaded && zone === ZONE_RKHM) {
+      if (this.s.enable && !this.loaded && zone === ZONE_RKHM) {
         this.load();
         this.loaded = true;
       }
-      else if (this.enable && this.loaded && zone !== ZONE_RKHM) {
+      else if (this.s.enable && this.loaded && zone !== ZONE_RKHM) {
         this.unload();
         this.loaded = false;
         this.msg_a = this.mech_str[3];
@@ -152,7 +151,7 @@ class rk9hm_guide_lite {
     this.loaded = false;
   }
 
-  send() { this.c.message(': ' + [...arguments].join('\n\t - ')); }
+  send() { this.c.message(': ' + [...arguments].join('\n - ')); }
 
   // reload
   saveState() {
@@ -160,7 +159,7 @@ class rk9hm_guide_lite {
   }
 
   loadState(state) {
-    if (this.enable && !this.loaded && state === ZONE_RKHM) {
+    if (this.s.enable && !this.loaded && state === ZONE_RKHM) {
       this.cur_zone = state;
       this.load();
     }
